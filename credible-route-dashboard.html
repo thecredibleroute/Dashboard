@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Credible Route - Member Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Epilogue:wght@300;400;500;600&family=Epilogue:ital,wght@1,400&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#E8B84B;--gold-dim:rgba(232,184,75,0.15);--bg:#0B0B0B;--surface:#131313;--card:#181818;--border:#252525;--text:#EDE8DF;--muted:#777;--muted2:#555;--green:#52C07A;--green-dim:rgba(82,192,122,0.12);--blue:#5B9BD6;--blue-dim:rgba(91,155,214,0.12);--track1:#E8B84B;--track2:#52C07A;--track3:#5B9BD6;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Epilogue',sans-serif;min-height:100vh;overflow-x:hidden;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:230px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
+.logo-wrap{padding:24px 20px 18px;border-bottom:1px solid var(--border);}
+.logo-tag{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:5px;}
+.logo{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);line-height:1.2;}
+.logo span{color:var(--gold);}
+.cohort-badge{margin:12px 18px 0;background:var(--gold-dim);border:1px solid rgba(232,184,75,0.2);border-radius:6px;padding:9px 12px;}
+.cohort-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:2px;}
+.cohort-name{font-size:12px;font-weight:600;color:var(--text);}
+.cohort-week{font-size:11px;color:var(--muted);margin-top:2px;}
+.nav-section{padding:14px 12px 0;flex:1;overflow-y:auto;}
+.nav-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);padding:0 8px;margin-bottom:5px;margin-top:13px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all 0.15s;margin-bottom:2px;border:1px solid transparent;background:none;width:100%;text-align:left;font-family:'Epilogue',sans-serif;}
+.nav-item:hover{background:var(--card);color:var(--text);}
+.nav-item.active{background:var(--gold-dim);color:var(--gold);border-color:rgba(232,184,75,0.2);}
+.nav-icon{width:18px;text-align:center;font-size:14px;}
+.nav-dot{width:6px;height:6px;border-radius:50%;margin-left:auto;flex-shrink:0;}
+.dot-gold{background:var(--gold);}.dot-green{background:var(--green);}.dot-blue{background:var(--blue);}
+.member-strip{padding:13px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:9px;}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#C98B1A);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#000;flex-shrink:0;}
+.member-name{font-size:12px;font-weight:600;color:var(--text);}
+.member-status{font-size:10px;color:var(--green);}
+.main{margin-left:230px;min-height:100vh;}
+.topbar{padding:16px 30px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);position:sticky;top:0;z-index:50;}
+.topbar-greeting{font-size:13px;color:var(--muted);}
+.topbar-greeting strong{color:var(--text);font-weight:600;}
+.topbar-right{display:flex;gap:9px;align-items:center;}
+.streak-badge{background:var(--gold-dim);border:1px solid rgba(232,184,75,0.3);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:600;color:var(--gold);}
+.xp-badge{background:var(--green-dim);border:1px solid rgba(82,192,122,0.3);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:600;color:var(--green);}
+.content{padding:26px 30px;max-width:1060px;}
+.view{display:none;}
+.view.active{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.hero-banner{background:linear-gradient(135deg,#1A1500 0%,#0F0F0F 60%);border:1px solid rgba(232,184,75,0.18);border-radius:12px;padding:30px 34px;margin-bottom:22px;position:relative;overflow:hidden;}
+.hero-banner::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(232,184,75,0.09) 0%,transparent 70%);border-radius:50%;}
+.hero-eyebrow{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:9px;font-weight:600;}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(20px,2.6vw,32px);font-weight:800;line-height:1.1;color:var(--text);margin-bottom:11px;}
+.hero-title span{color:var(--gold);}
+.hero-body{font-size:13px;color:var(--muted);line-height:1.75;max-width:530px;margin-bottom:20px;}
+.hero-stats{display:flex;gap:26px;flex-wrap:wrap;}
+.hs-num{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--gold);line-height:1;}
+.hs-label{font-size:11px;color:var(--muted);margin-top:3px;}
+.commitment-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:22px;}
+.cs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;}
+.cs-title{font-size:13px;font-weight:600;color:var(--text);}
+.cs-subtitle{font-size:11px;color:var(--muted);margin-top:2px;}
+.cs-pct{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--gold);}
+.progress-track{height:5px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:11px;}
+.progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),#F5D080);transition:width 0.6s;}
+.progress-fill.green{background:linear-gradient(90deg,var(--green),#7FDDA0);}
+.progress-fill.blue{background:linear-gradient(90deg,var(--blue),#8DBDE8);}
+.milestone-row{display:flex;gap:6px;flex-wrap:wrap;}
+.milestone{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);color:var(--muted2);}
+.milestone.done{background:var(--gold-dim);border-color:rgba(232,184,75,0.3);color:var(--gold);}
+.tracks-row{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:22px;}
+.track-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.track-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0;}
+.track-card.t1::before{background:var(--track1);}.track-card.t2::before{background:var(--track2);}.track-card.t3::before{background:var(--track3);}
+.track-card:hover{transform:translateY(-3px);}
+.track-card.t1:hover{border-color:rgba(232,184,75,0.4);}.track-card.t2:hover{border-color:rgba(82,192,122,0.4);}.track-card.t3:hover{border-color:rgba(91,155,214,0.4);}
+.tc-icon{font-size:22px;margin-bottom:9px;}
+.tc-num{font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:4px;}
+.t1 .tc-num{color:var(--track1);}.t2 .tc-num{color:var(--track2);}.t3 .tc-num{color:var(--track3);}
+.tc-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--text);margin-bottom:7px;line-height:1.2;}
+.tc-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:13px;}
+.tc-progress{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:6px;}
+.t1 .tc-progress .progress-fill{background:var(--track1);}.t2 .tc-progress .progress-fill{background:var(--track2);}.t3 .tc-progress .progress-fill{background:var(--track3);}
+.tc-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);align-items:center;}
+.tc-status{font-size:9px;padding:3px 8px;border-radius:20px;font-weight:600;}
+.status-active{background:var(--green-dim);color:var(--green);}.status-locked{background:var(--border);color:var(--muted2);}.status-upcoming{background:var(--gold-dim);color:var(--gold);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:22px;}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;}
+.panel-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.panel-sub{font-size:11px;color:var(--muted);margin-bottom:13px;}
+.activity-item{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);}
+.activity-item:last-child{border-bottom:none;}
+.act-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;color:#000;}
+.act-body{flex:1;}
+.act-name{font-size:12px;font-weight:600;color:var(--text);}
+.act-action{font-size:11px;color:var(--muted);line-height:1.4;margin-top:1px;}
+.act-time{font-size:10px;color:var(--muted2);margin-top:1px;}
+.act-badge{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:600;flex-shrink:0;margin-top:2px;}
+.win-item{padding:8px 0;border-bottom:1px solid var(--border);}
+.win-item:last-child{border-bottom:none;}
+.win-header{display:flex;align-items:center;gap:7px;margin-bottom:3px;}
+.win-emoji{font-size:14px;}
+.win-name{font-size:12px;font-weight:600;color:var(--text);}
+.win-text{font-size:12px;color:var(--muted);line-height:1.5;}
+.win-track{display:inline-block;font-size:9px;padding:2px 7px;border-radius:20px;margin-top:4px;font-weight:600;}
+.track-header{padding:24px 28px;border-radius:12px;margin-bottom:20px;}
+.th-t1{background:linear-gradient(135deg,#1A1200,#0F0F0F);border:1px solid rgba(232,184,75,0.2);}
+.th-t2{background:linear-gradient(135deg,#061408,#0F0F0F);border:1px solid rgba(82,192,122,0.2);}
+.th-t3{background:linear-gradient(135deg,#040C18,#0F0F0F);border:1px solid rgba(91,155,214,0.2);}
+.th-tag{font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:600;margin-bottom:7px;}
+.th-t1 .th-tag{color:var(--track1);}.th-t2 .th-tag{color:var(--track2);}.th-t3 .th-tag{color:var(--track3);}
+.th-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--text);margin-bottom:8px;line-height:1.15;}
+.th-body{font-size:13px;color:var(--muted);line-height:1.7;max-width:530px;margin-bottom:13px;}
+.th-promise{font-size:13px;font-style:italic;color:var(--text);opacity:0.7;border-left:3px solid;padding-left:13px;max-width:490px;}
+.th-t1 .th-promise{border-color:var(--track1);}.th-t2 .th-promise{border-color:var(--track2);}.th-t3 .th-promise{border-color:var(--track3);}
+.lesson-week-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:7px;margin-top:20px;padding-left:4px;}
+.lesson-list{display:flex;flex-direction:column;gap:6px;}
+.lesson-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:13px 16px;display:flex;align-items:center;gap:13px;cursor:pointer;transition:all 0.15s;}
+.lesson-item:hover:not(.locked){border-color:#333;background:#1C1C1C;}
+.lesson-item.locked{opacity:0.4;cursor:not-allowed;}
+.lesson-item.completed{border-color:rgba(82,192,122,0.2);background:rgba(82,192,122,0.04);}
+.lesson-num{width:29px;height:29px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:12px;font-weight:800;flex-shrink:0;}
+.ln-gold{background:var(--gold-dim);color:var(--gold);}.ln-green{background:var(--green-dim);color:var(--green);}.ln-blue{background:var(--blue-dim);color:var(--blue);}.ln-done{background:var(--green-dim);color:var(--green);}.ln-lock{background:var(--border);color:var(--muted2);}
+.lesson-body{flex:1;}
+.lesson-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.lesson-sub{font-size:11px;color:var(--muted);}
+.lesson-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.lesson-type{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+.lt-video{background:rgba(232,184,75,0.12);color:var(--gold);}.lt-action{background:var(--green-dim);color:var(--green);}.lt-tool{background:var(--blue-dim);color:var(--blue);}.lt-check{background:rgba(255,255,255,0.05);color:var(--muted);}
+.lesson-xp{font-size:10px;color:var(--muted2);}
+.psych-banner{border-radius:10px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:flex-start;gap:13px;}
+.pb-gold{background:var(--gold-dim);border:1px solid rgba(232,184,75,0.2);}
+.pb-green{background:var(--green-dim);border:1px solid rgba(82,192,122,0.2);}
+.pb-blue{background:var(--blue-dim);border:1px solid rgba(91,155,214,0.2);}
+.pb-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+.pb-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.pb-text{font-size:12px;color:var(--muted);line-height:1.55;}
+.pledge-card{background:linear-gradient(135deg,#0F0C00,#0B0B0B);border:1px solid rgba(232,184,75,0.22);border-radius:10px;padding:20px 24px;margin-bottom:16px;}
+.pledge-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--gold);margin-bottom:9px;}
+.pledge-text{font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:13px;}
+.pledge-text strong{color:var(--text);}
+.pledge-btn{background:var(--gold);color:#000;border:none;padding:9px 20px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;font-family:'Epilogue',sans-serif;}
+.pledge-btn:hover{background:#F5CF6E;transform:translateY(-1px);}
+.resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:9px;margin-top:13px;}
+.resource-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:13px;cursor:pointer;transition:all 0.15s;}
+.resource-card:hover{border-color:#333;transform:translateY(-2px);}
+.rc-icon{font-size:19px;margin-bottom:6px;}
+.rc-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.rc-sub{font-size:11px;color:var(--muted);}
+.rc-platform{display:inline-block;font-size:9px;padding:2px 7px;border-radius:20px;background:var(--border);color:var(--muted);margin-top:6px;letter-spacing:1px;text-transform:uppercase;font-weight:600;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:16px;padding:5px 0;background:none;border:none;font-family:'Epilogue',sans-serif;transition:color 0.15s;}
+.back-btn:hover{color:var(--text);}
+@media(max-width:860px){
+.sidebar{width:56px;}
+.logo-wrap div:not(.logo-tag),.cohort-badge,.nav-label,.nav-item span:not(.nav-icon),.member-strip .member-name,.member-strip .member-status{display:none;}
+.nav-item{justify-content:center;}
+.main{margin-left:56px;}
+.tracks-row{grid-template-columns:1fr;}
+.two-col{grid-template-columns:1fr;}
+.content{padding:16px;}
+.topbar{padding:11px 16px;}}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-tag">Member Portal</div>
+    <div class="logo">The <span>Credible</span><br>Route</div>
+  </div>
+  <div class="cohort-badge">
+    <div class="cohort-label">Your Cohort</div>
+    <div class="cohort-name">Spring 26 Cohort 1</div>
+    <div class="cohort-week">Week 2 of 12</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Home</div>
+    <button class="nav-item active" onclick="showView('home',this)"><span class="nav-icon">⚡</span><span>Dashboard</span></button>
+    <button class="nav-item" onclick="showView('home',this)"><span class="nav-icon">👥</span><span>My Cohort</span></button>
+    <div class="nav-label">Tracks</div>
+    <button class="nav-item" onclick="showTrack(1,this)"><span class="nav-icon">🚀</span><span>Remote Income</span><span class="nav-dot dot-gold"></span></button>
+    <button class="nav-item" onclick="showTrack(2,this)"><span class="nav-icon">💳</span><span>Credit to Biz</span><span class="nav-dot dot-green"></span></button>
+    <button class="nav-item" onclick="showTrack(3,this)"><span class="nav-icon">🖥️</span><span>Digital Access</span><span class="nav-dot dot-blue"></span></button>
+    <div class="nav-label">Support</div>
+    <button class="nav-item" onclick="showView('resources',this)"><span class="nav-icon">🗄️</span><span>Resource Closet</span></button>
+    <button class="nav-item" onclick="showView('home',this)"><span class="nav-icon">💬</span><span>Community</span></button>
+  </div>
+  <div class="member-strip">
+    <div class="avatar">YOU</div>
+    <div><div class="member-name">Your Name</div><div class="member-status">Active</div></div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-greeting">You showed up today. <strong>That already puts you ahead.</strong> Week 2 is live.</div>
+    <div class="topbar-right">
+      <div class="streak-badge">🔥 4-day streak</div>
+      <div class="xp-badge" id="xp-display">⚡ 340 XP</div>
+    </div>
+  </div>
+  <div class="content">
+
+    <div id="view-home" class="view active">
+      <div class="hero-banner">
+        <div class="hero-eyebrow">Spring 2026 — Cohort 1 · Week 2 of 12</div>
+        <div class="hero-title">You didn't come this far<br>to only come <span>this far.</span></div>
+        <div class="hero-body">Every person in this cohort started where you are. No connections. No perfect credit. No trust fund. What you DO have is the exact roadmap that changes all of that — and 22 other people going through it with you right now. No excuses. Just steps.</div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="hs-num">23</div><div class="hs-label">Members active</div></div>
+          <div class="hero-stat"><div class="hs-num">3</div><div class="hs-label">Tracks running</div></div>
+          <div class="hero-stat"><div class="hs-num">12</div><div class="hs-label">Weeks to change</div></div>
+        </div>
+      </div>
+      <div class="commitment-section">
+        <div class="cs-header">
+          <div><div class="cs-title">Cohort Progress — Week 2 of 12</div><div class="cs-subtitle">Your whole crew is moving. Don't be the gap in this line.</div></div>
+          <div class="cs-pct">18%</div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:18%"></div></div>
+        <div class="milestone-row">
+          <span class="milestone done">✓ Orientation</span>
+          <span class="milestone done">✓ Week 1</span>
+          <span class="milestone">Week 2 — Now</span>
+          <span class="milestone">Midpoint Check-In</span>
+          <span class="milestone">Graduation Day</span>
+        </div>
+      </div>
+      <div class="tracks-row">
+        <div class="track-card t1" onclick="showTrack(1)">
+          <div class="tc-icon">🚀</div>
+          <div class="tc-num">Track 01</div>
+          <div class="tc-title">Remote Income Readiness</div>
+          <div class="tc-desc">Get paid online. No degree required. Build your first remote income stream in 4 weeks.</div>
+          <div class="tc-progress"><div class="progress-fill" style="width:25%"></div></div>
+          <div class="tc-meta"><span>2 of 8 done</span><span class="tc-status status-active">Active Now</span></div>
+        </div>
+        <div class="track-card t2" onclick="showTrack(2)">
+          <div class="tc-icon">💳</div>
+          <div class="tc-num">Track 02</div>
+          <div class="tc-title">Credit Up to Business Launch</div>
+          <div class="tc-desc">Fix your credit while building your business foundation at the same time.</div>
+          <div class="tc-progress"><div class="progress-fill green" style="width:10%"></div></div>
+          <div class="tc-meta"><span>1 of 10 done</span><span class="tc-status status-upcoming">Unlocks Wk 3</span></div>
+        </div>
+        <div class="track-card t3" onclick="showTrack(3)">
+          <div class="tc-icon">🖥️</div>
+          <div class="tc-num">Track 03</div>
+          <div class="tc-title">Digital Access and Equipment</div>
+          <div class="tc-desc">Get the tools. Learn the tools. Use them to earn. We handle access, you handle effort.</div>
+          <div class="tc-progress"><div class="progress-fill blue" style="width:0%"></div></div>
+          <div class="tc-meta"><span>Starts Week 4</span><span class="tc-status status-locked">🔒 Wk 4</span></div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-title">Cohort Activity</div>
+          <div class="panel-sub">Your crew is working right now.</div>
+          <div class="activity-item">
+            <div class="act-avatar" style="background:linear-gradient(135deg,#E8B84B,#C98B1A)">MJ</div>
+            <div class="act-body"><div class="act-name">Marcus J.</div><div class="act-action">Completed Lesson 2 — dropped a profile tip in Discord</div><div class="act-time">12 min ago</div></div>
+            <span class="act-badge" style="background:var(--gold-dim);color:var(--gold)">+50XP</span>
+          </div>
+          <div class="activity-item">
+            <div class="act-avatar" style="background:linear-gradient(135deg,#52C07A,#2A7A4A)">SL</div>
+            <div class="act-body"><div class="act-name">Shanice L.</div><div class="act-action">Started "Read Your Credit Report" — 3 min in</div><div class="act-time">34 min ago</div></div>
+          </div>
+          <div class="activity-item">
+            <div class="act-avatar" style="background:linear-gradient(135deg,#5B9BD6,#2A5A8A)">DW</div>
+            <div class="act-body"><div class="act-name">Deja W.</div><div class="act-action">Picked up equipment kit from resource closet</div><div class="act-time">2 hrs ago</div></div>
+          </div>
+          <div class="activity-item">
+            <div class="act-avatar" style="background:linear-gradient(135deg,#C07A52,#7A4A2A)">KT</div>
+            <div class="act-body"><div class="act-name">Keisha T.</div><div class="act-action">Posted income goal in cohort channel — 11 reactions</div><div class="act-time">Yesterday</div></div>
+            <span class="act-badge" style="background:var(--green-dim);color:var(--green)">Win</span>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">🏆 This Week's Wins</div>
+          <div class="panel-sub">Real results from people just like you.</div>
+          <div class="win-item">
+            <div class="win-header"><div class="win-emoji">💰</div><div class="win-name">Marcus J.</div></div>
+            <div class="win-text">"Got my first Upwork client. $75 for 2 hours. Used the profile template from Track 1."</div>
+            <span class="win-track" style="background:var(--gold-dim);color:var(--gold)">Track 1</span>
+          </div>
+          <div class="win-item">
+            <div class="win-header"><div class="win-emoji">📈</div><div class="win-name">Renee B.</div></div>
+            <div class="win-text">"Disputed 3 errors. Score jumped 22 points in 2 weeks. Nobody ever told me I could do that."</div>
+            <span class="win-track" style="background:var(--green-dim);color:var(--green)">Track 2</span>
+          </div>
+          <div class="win-item">
+            <div class="win-header"><div class="win-emoji">🖥️</div><div class="win-name">Deja W.</div></div>
+            <div class="win-text">"Got my laptop. Set it up the same day. Haven't had a personal computer in 4 years."</div>
+            <span class="win-track" style="background:var(--blue-dim);color:var(--blue)">Track 3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-track1" class="view">
+      <button class="back-btn" onclick="showView('home')">← Back to Dashboard</button>
+      <div class="track-header th-t1">
+        <div class="th-tag">Track 01 · Remote Income Readiness</div>
+        <div class="th-title">Own the Remote Income Lane.<br>Nobody in Jackson Is Teaching This.</div>
+        <div class="th-body">You don't need a degree. You don't need a perfect resume. You need a skill, a profile, and the courage to send the first proposal. This track gets you to your first paid remote gig — then shows you how to build on top of it.</div>
+        <div class="th-promise">"By Week 6, you will have a live profile, at least one active pitch out, and a clear path to $500 per month in remote income."</div>
+      </div>
+      <div class="psych-banner pb-gold">
+        <div class="pb-icon">🔥</div>
+        <div class="pb-body">
+          <div class="pb-title">19 of 23 cohort members are in this track right now.</div>
+          <div class="pb-text">You are not doing this alone. Every lesson has a Discord thread where members share what is working and what flopped. When you finish a lesson, drop your takeaway. That is your accountability. That is how this works.</div>
+        </div>
+      </div>
+      <div class="pledge-card">
+        <div class="pledge-title">📋 Lock In Your Commitment Before Lesson 1</div>
+        <div class="pledge-text">Open Discord and type one sentence: <strong>"My income goal for Track 1 is $___ by [date]."</strong><br><br>People who write public goals are <strong>3x more likely to follow through.</strong> This is not busywork. This is you wiring your brain for action before you even start. Takes 30 seconds.</div>
+        <button class="pledge-btn" onclick="this.textContent='Commitment Posted — Now Start Lesson 1'; this.style.background='var(--green)'; this.style.color='#fff'">Post My Goal to Discord →</button>
+      </div>
+      <div class="lesson-week-title">Week 1–2 · Build the Foundation</div>
+      <div class="lesson-list">
+        <div class="lesson-item completed">
+          <div class="lesson-num ln-done">✓</div>
+          <div class="lesson-body"><div class="lesson-title">What Remote Income Actually Means — How Real People in Jackson Are Already Doing It</div><div class="lesson-sub">8 min video · No jargon. No hype. Real examples from real people.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-video">Video</span><span class="lesson-xp">+30 XP earned</span></div>
+        </div>
+        <div class="lesson-item completed">
+          <div class="lesson-num ln-done">✓</div>
+          <div class="lesson-body"><div class="lesson-title">The 5 Remote Income Paths That Require Zero Experience to Start</div><div class="lesson-sub">6 min video + 1-page cheat sheet on Canva</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-video">Video</span><span class="lesson-xp">+30 XP earned</span></div>
+        </div>
+        <div class="lesson-item" onclick="markDone(this,40)">
+          <div class="lesson-num ln-gold">3</div>
+          <div class="lesson-body"><div class="lesson-title">Pick Your Lane: Freelance, Gig Work, or Remote Job?</div><div class="lesson-sub">Quiz + 10 min walkthrough — choose the right path for your life RIGHT NOW, not someday</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-action">Action</span><span class="lesson-xp">+40 XP</span></div>
+        </div>
+        <div class="lesson-item" onclick="markDone(this,50)">
+          <div class="lesson-num ln-gold">4</div>
+          <div class="lesson-body"><div class="lesson-title">Build Your First Profile on Upwork or Fiverr — We Do It Together</div><div class="lesson-sub">15 min screen-share video · Pause. Follow along. Profile is live by the end.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-video">Video</span><span class="lesson-xp">+50 XP</span></div>
+        </div>
+      </div>
+      <div class="lesson-week-title">Week 3–4 · Get Your First Money</div>
+      <div class="lesson-list">
+        <div class="lesson-item" onclick="markDone(this,60)">
+          <div class="lesson-num ln-gold">5</div>
+          <div class="lesson-body"><div class="lesson-title">How to Write a Proposal That Gets Opened — Copy the Template, Edit 3 Lines, Send</div><div class="lesson-sub">10 min · The exact template working for cohort members right now</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-tool">Template</span><span class="lesson-xp">+60 XP</span></div>
+        </div>
+        <div class="lesson-item" onclick="markDone(this,60)">
+          <div class="lesson-num ln-gold">6</div>
+          <div class="lesson-body"><div class="lesson-title">Send Your First Pitch Today — Accountability Assignment</div><div class="lesson-sub">Screenshot your sent proposal and post it in Discord. Done means done.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-action">Action</span><span class="lesson-xp">+60 XP</span></div>
+        </div>
+        <div class="lesson-item" onclick="markDone(this,50)">
+          <div class="lesson-num ln-gold">7</div>
+          <div class="lesson-body"><div class="lesson-title">Getting Paid: Stripe, PayPal, Cash App for Business — Set It Up Right</div><div class="lesson-sub">12 min · Do not skip this. Watch it before your first client arrives.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-video">Video</span><span class="lesson-xp">+50 XP</span></div>
+        </div>
+        <div class="lesson-item" onclick="markDone(this,80)">
+          <div class="lesson-num ln-gold">8</div>
+          <div class="lesson-body"><div class="lesson-title">Track 1 Graduation — Earnings Screenshot or Active Pitch Log</div><div class="lesson-sub">Either counts. Post it. Own it. This is your proof of momentum.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-check">Milestone</span><span class="lesson-xp">+80 XP</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-track2" class="view">
+      <button class="back-btn" onclick="showView('home')">← Back to Dashboard</button>
+      <div class="track-header th-t2">
+        <div class="th-tag">Track 02 · Credit Up to Business Launch</div>
+        <div class="th-title">Fix the Foundation.<br>Then Build Something Real On It.</div>
+        <div class="th-body">Bad credit is not a life sentence. It is a puzzle with solvable pieces. This track walks you through repairing your credit score AND building the groundwork for your business at the same time. Most programs make you pick one. Not here.</div>
+        <div class="th-promise">"By the end of this track, you will have disputed at least one negative item, know exactly what your score needs, and have your business structure decision locked in."</div>
+      </div>
+      <div class="psych-banner pb-green">
+        <div class="pb-icon">📊</div>
+        <div class="pb-body">
+          <div class="pb-title">Your credit score is a number. Numbers change.</div>
+          <div class="pb-text">Renee went from 521 to 589 in 6 weeks using exactly what is in Lesson 3. No credit repair service. No money paid upfront. Just the process you are about to learn — step by step.</div>
+        </div>
+      </div>
+      <div class="lesson-week-title">Week 2–3 · Know Your Number</div>
+      <div class="lesson-list">
+        <div class="lesson-item completed">
+          <div class="lesson-num ln-done">✓</div>
+          <div class="lesson-body"><div class="lesson-title">Pull Your Free Credit Report the Right Way — Not the Sketchy Sites</div><div class="lesson-sub">7 min · AnnualCreditReport.com walkthrough. Know exactly what you are working with.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-video">Video</span><span class="lesson-xp">+30 XP earned</span></div>
+        </div>
+        <div class="lesson-item" onclick="markDone(this,40)">
+          <div class="lesson-num ln-green">2</div>
+          <div class="lesson-body"><div class="lesson-title">Read Your Report Like a Pro — What to Look For, What to Flag</div><div class="lesson-sub">10 min walkthrough + annotated PDF guide in Canva</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-tool">Tool</span><span class="lesson-xp">+40 XP</span></div>
+        </div>
+        <div class="lesson-item" onclick="markDone(this,50)">
+          <div class="lesson-num ln-green">3</div>
+          <div class="lesson-body"><div class="lesson-title">Write a Dispute Letter That Actually Works — Template Included, Copy It</div><div class="lesson-sub">12 min + copy-paste template · This lesson alone can move your score. Do not skip.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-action">Action</span><span class="lesson-xp">+50 XP</span></div>
+        </div>
+        <div class="lesson-item" onclick="markDone(this,50)">
+          <div class="lesson-num ln-green">4</div>
+          <div class="lesson-body"><div class="lesson-title">The 5 Factors Driving Your Score — Which One to Fix First</div><div class="lesson-sub">8 min · Most people attack the wrong thing first. Watch this before you do anything else.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-video">Video</span><span class="lesson-xp">+50 XP</span></div>
+        </div>
+      </div>
+      <div class="lesson-week-title">Week 4–6 · Build the Business</div>
+      <div class="lesson-list">
+        <div class="lesson-item" onclick="markDone(this,60)">
+          <div class="lesson-num ln-green">5</div>
+          <div class="lesson-body"><div class="lesson-title">LLC vs Sole Prop — Which One Is Right for YOU Right Now?</div><div class="lesson-sub">10 min · Not general advice. Specific to Mississippi residents in your situation.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-video">Video</span><span class="lesson-xp">+60 XP</span></div>
+        </div>
+        <div class="lesson-item" onclick="markDone(this,60)">
+          <div class="lesson-num ln-green">6</div>
+          <div class="lesson-body"><div class="lesson-title">Register Your Business in Mississippi — Step-by-Step Screen Share</div><div class="lesson-sub">15 min · We do it live on screen. Pause and follow along. $50 filing fee shown.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-action">Action</span><span class="lesson-xp">+60 XP</span></div>
+        </div>
+        <div class="lesson-item" onclick="markDone(this,70)">
+          <div class="lesson-num ln-green">7</div>
+          <div class="lesson-body"><div class="lesson-title">Open a Business Bank Account — Banks That Actually Work for You</div><div class="lesson-sub">10 min · ChexSystems, second-chance accounts, and credit unions explained plainly.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-tool">Tool</span><span class="lesson-xp">+70 XP</span></div>
+        </div>
+        <div class="lesson-item" onclick="markDone(this,80)">
+          <div class="lesson-num ln-green">8</div>
+          <div class="lesson-body"><div class="lesson-title">Track 2 Graduation — Credit Score Change Logged, Business Structure Confirmed</div><div class="lesson-sub">Milestone check-in. Show your progress. That is the win.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-check">Milestone</span><span class="lesson-xp">+80 XP</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-track3" class="view">
+      <button class="back-btn" onclick="showView('home')">← Back to Dashboard</button>
+      <div class="track-header th-t3">
+        <div class="th-tag">Track 03 · Digital Access and Equipment</div>
+        <div class="th-title">Get the Tools.<br>Learn the Tools.<br>Make Money With the Tools.</div>
+        <div class="th-body">This track starts the moment your equipment is in your hands. We deploy it, walk you through setup, and teach you exactly what to do with it. No prior tech knowledge needed. Zero. Show up and follow the steps.</div>
+        <div class="th-promise">"By Week 8, you will have a working device, reliable connectivity, and know how to use the top 5 tools for your income track."</div>
+      </div>
+      <div class="psych-banner pb-blue">
+        <div class="pb-icon">🔒</div>
+        <div class="pb-body">
+          <div class="pb-title">This track unlocks at Week 4 — here is exactly why.</div>
+          <div class="pb-text">Equipment means more when you already know what you are using it for. Finish the Track 1 and 2 foundation first. When your device arrives, you will hit the ground running — not trying to figure out the basics at the same time. That is not a delay. That is strategy.</div>
+        </div>
+      </div>
+      <div class="lesson-week-title">Week 4 · Setup and First Access</div>
+      <div class="lesson-list">
+        <div class="lesson-item locked">
+          <div class="lesson-num ln-lock">🔒</div>
+          <div class="lesson-body"><div class="lesson-title">Equipment Pickup and Unboxing Walkthrough</div><div class="lesson-sub">Video sent when your kit is ready · 15 min setup checklist walks you through everything</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-video">Video</span><span class="lesson-xp">+30 XP</span></div>
+        </div>
+        <div class="lesson-item locked">
+          <div class="lesson-num ln-lock">🔒</div>
+          <div class="lesson-body"><div class="lesson-title">Internet Access in Jackson — Free, Low-Cost, and Hotspot Setup Options</div><div class="lesson-sub">10 min · ACP program, library wifi, and mobile hotspot all covered</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-tool">Tool</span><span class="lesson-xp">+30 XP</span></div>
+        </div>
+        <div class="lesson-item locked">
+          <div class="lesson-num ln-lock">🔒</div>
+          <div class="lesson-body"><div class="lesson-title">The 5 Free Tools You Need for Remote Income — Installed and Explained</div><div class="lesson-sub">Google Workspace, Canva, Zoom, Stripe, Notion — one by one, no confusion</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-action">Action</span><span class="lesson-xp">+50 XP</span></div>
+        </div>
+      </div>
+      <div class="lesson-week-title">Week 5–6 · Build Your Skills</div>
+      <div class="lesson-list">
+        <div class="lesson-item locked">
+          <div class="lesson-num ln-lock">🔒</div>
+          <div class="lesson-body"><div class="lesson-title">Canva for Money — Build a Portfolio, Flyer, or Product Page Today</div><div class="lesson-sub">Step-by-step screen share · End of lesson you have a shareable professional work sample</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-video">Video</span><span class="lesson-xp">+60 XP</span></div>
+        </div>
+        <div class="lesson-item locked">
+          <div class="lesson-num ln-lock">🔒</div>
+          <div class="lesson-body"><div class="lesson-title">Video Calls That Do Not Kill Your Credibility — Zoom and Background Setup</div><div class="lesson-sub">8 min · Look professional on any device, any room. Client calls, job interviews, all of it.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-tool">Tool</span><span class="lesson-xp">+50 XP</span></div>
+        </div>
+        <div class="lesson-item locked">
+          <div class="lesson-num ln-lock">🔒</div>
+          <div class="lesson-body"><div class="lesson-title">Track 3 Capstone — Your Digital Workspace Is Live, Prove It</div><div class="lesson-sub">Submit screenshot of your setup plus tools installed. That is your Track 3 graduation.</div></div>
+          <div class="lesson-right"><span class="lesson-type lt-check">Milestone</span><span class="lesson-xp">+100 XP</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-resources" class="view">
+      <button class="back-btn" onclick="showView('home')">← Back to Dashboard</button>
+      <div class="hero-banner" style="margin-bottom:20px">
+        <div class="hero-eyebrow">Support Services</div>
+        <div class="hero-title">Everything You Need.<br><span>Nothing You Don't.</span></div>
+        <div class="hero-body">These resources exist because barriers are real. A professional outfit, a meal, a working laptop — sometimes that is the difference between showing up and not. No paperwork. No shame. Just what you need to keep going.</div>
+      </div>
+      <div class="panel" style="margin-bottom:12px">
+        <div class="panel-title">Resource Closet and Pantry</div>
+        <div class="panel-sub">Available to all active cohort members. Walk in. Ask. Take what you need.</div>
+        <div class="resource-grid">
+          <div class="resource-card"><div class="rc-icon">👔</div><div class="rc-title">Professional Clothing</div><div class="rc-sub">Interview-ready outfits, business casual. All sizes.</div><span class="rc-platform">Closet</span></div>
+          <div class="resource-card"><div class="rc-icon">🥫</div><div class="rc-title">Pantry Pickup</div><div class="rc-sub">Non-perishables and basics. Tues and Fri pickup.</div><span class="rc-platform">Pantry</span></div>
+          <div class="resource-card"><div class="rc-icon">🖥️</div><div class="rc-title">Equipment Kit</div><div class="rc-sub">Laptop, charger, hotspot device. Week 4 deployment.</div><span class="rc-platform">Track 3</span></div>
+          <div class="resource-card"><div class="rc-icon">📄</div><div class="rc-title">Document Help</div><div class="rc-sub">Resume templates, printing, notary. Walk-in welcome.</div><span class="rc-platform">In-Person</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Your Digital Tool Stack</div>
+        <div class="panel-sub">All free or included in the program.</div>
+        <div class="resource-grid">
+          <div class="resource-card"><div class="rc-icon">🏫</div><div class="rc-title">Skool</div><div class="rc-sub">Your course home — videos, modules, progress.</div><span class="rc-platform">Skool</span></div>
+          <div class="resource-card"><div class="rc-icon">💬</div><div class="rc-title">Discord</div><div class="rc-sub">Live cohort chat, accountability, wins.</div><span class="rc-platform">Discord</span></div>
+          <div class="resource-card"><div class="rc-icon">🎨</div><div class="rc-title">Canva</div><div class="rc-sub">Templates, portfolios, flyers. Core to Tracks 1 and 3.</div><span class="rc-platform">Canva</span></div>
+          <div class="resource-card"><div class="rc-icon">📋</div><div class="rc-title">Track Templates</div><div class="rc-sub">Dispute letters, proposals, checklists — ready to use.</div><span class="rc-platform">Canva + Drive</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+<script>
+let xp=340;
+function showView(n,el){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-'+n).classList.add('active');if(el){document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');}window.scrollTo(0,0);}
+function showTrack(n,el){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-track'+n).classList.add('active');if(el){document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');}window.scrollTo(0,0);}
+function markDone(el,pts){if(el.classList.contains('completed')||el.classList.contains('locked'))return;el.classList.add('completed');el.style.borderColor='rgba(82,192,122,0.3)';el.style.background='rgba(82,192,122,0.05)';const n=el.querySelector('.lesson-num');n.className='lesson-num ln-done';n.textContent='✓';const x=el.querySelector('.lesson-xp');if(x)x.textContent='+'+pts+' XP earned';xp+=pts;document.getElementById('xp-display').textContent='⚡ '+xp+' XP';}
+</script>
+</body>
+</html>
